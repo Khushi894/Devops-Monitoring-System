@@ -25,3 +25,25 @@ jobs:
             -v "$PWD/prometheus:/etc/prometheus:ro" \
             prom/prometheus:latest \
             check config /etc/prometheus/prometheus.yml
+
+      - name: Start Monitoring Services
+        run: docker compose up -d
+
+      - name: Test Prometheus and Grafana
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:9090/-/ready >/dev/null \
+              && curl -fsS http://localhost:3000/api/health >/dev/null; then
+              echo "Prometheus and Grafana are healthy!"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          docker compose logs
+          echo "Monitoring services failed health checks."
+          exit 1
+
+      - name: Stop Monitoring Services
+        if: always()
+        run: docker compose down
