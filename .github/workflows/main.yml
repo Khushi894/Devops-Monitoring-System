@@ -1,0 +1,26 @@
+
+name: DevOps Monitoring CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose
+        run: docker compose config -q
+
+      - name: Validate Prometheus Configuration
+        run: |
+          docker run --rm \
+            -v "$PWD/prometheus:/etc/prometheus:ro" \
+            prom/prometheus:latest \
+            promtool check config /etc/prometheus/prometheus.yml
