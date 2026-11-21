@@ -18,7 +18,6 @@ jobs:
       - name: Validate Docker Compose
         run: docker compose config -q
 
-      - 
       - name: Validate Prometheus Configuration
         run: |
           docker run --rm \
@@ -26,8 +25,3 @@ jobs:
             -v "$PWD/prometheus:/etc/prometheus:ro" \
             prom/prometheus:latest \
             check config /etc/prometheus/prometheus.yml
-
-          docker run --rm \
-            -v "$PWD/prometheus:/etc/prometheus:ro" \
-            prom/prometheus:latest \
-            promtool check config /etc/prometheus/prometheus.yml
